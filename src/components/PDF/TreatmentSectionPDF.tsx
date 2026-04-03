@@ -23,24 +23,11 @@ const styles = StyleSheet.create({
     color: '#475569',
     marginBottom: 6,
   },
-  badgeContainer: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
-  badge: {
-    backgroundColor: '#f0fdfa',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: '#0d9488',
-    marginRight: 8,
-    marginBottom: 8,
-  },
   badgeText: {
     fontSize: 10,
     color: '#0d9488',
     fontWeight: 600,
+    lineHeight: 1.5,
   },
   emptyText: {
     fontSize: 10,
@@ -60,11 +47,9 @@ export function TreatmentSectionPDF({ data }: TreatmentSectionPDFProps) {
       <View style={styles.subsection}>
         <Text style={styles.subsectionTitle}>Goals of Treatment</Text>
         {data.goals.length > 0 ? (
-          <View style={styles.badgeContainer}>
+          <View>
             {data.goals.map((goal, index) => (
-              <View key={goal} style={[styles.badge, index === data.goals.length - 1 ? { marginRight: 0 } : {}]}>
-                <Text style={styles.badgeText}>{goal}</Text>
-              </View>
+              <Text key={goal} style={styles.badgeText}>{goal}{index < data.goals.length - 1 ? '\n' : ''}</Text>
             ))}
           </View>
         ) : (
@@ -75,11 +60,9 @@ export function TreatmentSectionPDF({ data }: TreatmentSectionPDFProps) {
       <View style={styles.subsection}>
         <Text style={styles.subsectionTitle}>Planned Cancer Treatments</Text>
         {data.treatments.length > 0 ? (
-          <View style={styles.badgeContainer}>
+          <View>
             {data.treatments.map((treatment, index) => (
-              <View key={treatment} style={[styles.badge, index === data.treatments.length - 1 ? { marginRight: 0 } : {}]}>
-                <Text style={styles.badgeText}>{treatment}</Text>
-              </View>
+              <Text key={treatment} style={styles.badgeText}>{treatment}{index < data.treatments.length - 1 ? '\n' : ''}</Text>
             ))}
           </View>
         ) : (
