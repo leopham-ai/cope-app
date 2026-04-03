@@ -183,13 +183,6 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 </Button>
               </div>
 
-              <div className="mb-3">
-                <label className="block text-xs text-slate-500 mb-1">Likelihood of Cure with Best Possible Treatment</label>
-                <div className="px-3 py-2 bg-slate-100 rounded border border-slate-200 text-slate-700">
-                  {getSourceData('SEER Data')?.likelihoodOfCure || 'Not fetched'}
-                </div>
-              </div>
-
               <p className="text-xs text-slate-500">
                 {getDisplayValues(getSourceData('SEER Data'))}
               </p>
@@ -221,13 +214,6 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 </Button>
               </div>
 
-              <div className="mb-3">
-                <label className="block text-xs text-slate-500 mb-1">Likelihood of Cure with Best Possible Treatment</label>
-                <div className="px-3 py-2 bg-slate-100 rounded border border-slate-200 text-slate-700">
-                  {getSourceData('CancerSurvivalRates')?.likelihoodOfCure || 'Not fetched'}
-                </div>
-              </div>
-
               <p className="text-xs text-slate-500">
                 {getDisplayValues(getSourceData('CancerSurvivalRates'))}
               </p>
@@ -257,13 +243,6 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                     'Fetch Data'
                   )}
                 </Button>
-              </div>
-
-              <div className="mb-3">
-                <label className="block text-xs text-slate-500 mb-1">Likelihood of Cure with Best Possible Treatment</label>
-                <div className="px-3 py-2 bg-slate-100 rounded border border-slate-200 text-slate-700">
-                  {getSourceData('AI Analysis')?.likelihoodOfCure || 'Not fetched'}
-                </div>
               </div>
 
               <p className="text-xs text-slate-500">

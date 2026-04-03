@@ -77,8 +77,9 @@ export function COPEDocument({ demographics, cancerDetails, treatmentPlan, progn
 
         {/* Prognosis Section */}
         <PrognosisSectionPDF data={prognosisData} />
+      </Page>
 
-        {/* Prognosis Discussion - appears after form data */}
+      <Page size="A4" style={styles.page}>
         <PrognosisDiscussion />
       </Page>
     </Document>
