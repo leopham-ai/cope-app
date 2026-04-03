@@ -130,13 +130,14 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     lines.push('Likelihood of Survival');
     lines.push('With the most effective cancer treatment, how likely is it that I will live...');
     lines.push('');
-    lines.push('6 Months       1 Year         2 Years        5 Years');
     const likelihoodLevels = ['Very unlikely (<1%)', 'Unlikely (<25%)', 'Possible (25-75%)', 'Likely (>75%)'];
-    likelihoodLevels.forEach((level) => {
-      const cells = ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].map((tf) =>
+    lines.push(`"6 Months" "${likelihoodLevels.join('" "')}"`);
+    ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].forEach((tf) => {
+      const label = tf === 'sixMonth' ? '6 Months' : tf === 'oneYear' ? '1 Year' : tf === 'twoYear' ? '2 Years' : '5 Years';
+      const cells = likelihoodLevels.map((level) =>
         likelihoodExpectations[tf as keyof typeof likelihoodExpectations] === level ? '[X]' : '[ ]'
       );
-      lines.push(`${level.padEnd(22)}${cells.join('           ')}`);
+      lines.push(`${label.padEnd(10)}${cells.join('         ')}`);
     });
     lines.push('');
 
@@ -144,12 +145,13 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     lines.push('Survival Without Treatment');
     lines.push('Without any cancer treatment, how likely is it that I will live...');
     lines.push('');
-    lines.push('6 Months       1 Year         2 Years        5 Years');
-    likelihoodLevels.forEach((level) => {
-      const cells = ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].map((tf) =>
+    lines.push(`"6 Months" "${likelihoodLevels.join('" "')}"`);
+    ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].forEach((tf) => {
+      const label = tf === 'sixMonth' ? '6 Months' : tf === 'oneYear' ? '1 Year' : tf === 'twoYear' ? '2 Years' : '5 Years';
+      const cells = likelihoodLevels.map((level) =>
         survivalWithoutTreatment[tf as keyof typeof survivalWithoutTreatment] === level ? '[X]' : '[ ]'
       );
-      lines.push(`${level.padEnd(22)}${cells.join('           ')}`);
+      lines.push(`${label.padEnd(10)}${cells.join('         ')}`);
     });
     lines.push('');
 

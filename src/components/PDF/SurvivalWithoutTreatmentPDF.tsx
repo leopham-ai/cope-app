@@ -96,19 +96,19 @@ export function SurvivalWithoutTreatmentPDF({ data }: SurvivalWithoutTreatmentPD
         {/* Header row */}
         <View style={styles.headerRow}>
           <View style={styles.headerCell} />
-          {TIMEFRAMES.map((tf) => (
-            <Text key={tf} style={styles.headerCell}>{TIMEFRAME_LABELS[tf]}</Text>
+          {LIKELIHOOD_LEVELS.map((level) => (
+            <Text key={level} style={styles.headerCell}>{level}</Text>
           ))}
         </View>
 
-        {/* Likelihood rows */}
-        {LIKELIHOOD_LEVELS.map((level, rowIndex) => (
-          <View key={level} style={[styles.row, rowIndex === LIKELIHOOD_LEVELS.length - 1 ? styles.rowLast : {}]}>
+        {/* Timeframe rows */}
+        {TIMEFRAMES.map((tf, rowIndex) => (
+          <View key={tf} style={[styles.row, rowIndex === TIMEFRAMES.length - 1 ? styles.rowLast : {}]}>
             <View style={styles.labelCell}>
-              <Text style={{ fontSize: 9, color: '#334155' }}>{level}</Text>
+              <Text style={{ fontSize: 9, fontWeight: 600, color: '#334155' }}>{TIMEFRAME_LABELS[tf]}</Text>
             </View>
-            {TIMEFRAMES.map((tf) => (
-              <View key={tf} style={styles.cell}>
+            {LIKELIHOOD_LEVELS.map((level) => (
+              <View key={level} style={styles.cell}>
                 <Text style={{ fontSize: 12, color: data[tf] === level ? '#0d9488' : '#e2e8f0' }}>
                   {data[tf] === level ? '☑' : '☐'}
                 </Text>

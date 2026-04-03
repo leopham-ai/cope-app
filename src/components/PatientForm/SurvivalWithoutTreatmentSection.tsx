@@ -26,22 +26,22 @@ export function SurvivalWithoutTreatmentSection({ data, onChange }: SurvivalWith
           <thead>
             <tr>
               <th className="text-left font-medium text-slate-700 pb-2 pr-4" />
-              {SURVIVAL_TIMEFRAMES.map((tf) => (
-                <th key={tf.key} className="text-center font-medium text-slate-700 pb-2 px-1 min-w-[80px]">
-                  {tf.label}
+              {LIKELIHOOD_LEVELS.map((level) => (
+                <th key={level} className="text-center font-medium text-slate-700 pb-2 px-1 min-w-[120px]">
+                  {level}
                 </th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {LIKELIHOOD_LEVELS.map((level) => (
-              <tr key={level}>
-                <td className="py-1 pr-4 text-slate-700 whitespace-nowrap">{level}</td>
-                {SURVIVAL_TIMEFRAMES.map((tf) => (
-                  <td key={tf.key} className="text-center py-1 px-1">
+            {SURVIVAL_TIMEFRAMES.map((tf) => (
+              <tr key={tf.key}>
+                <td className="py-1 pr-4 text-slate-700 whitespace-nowrap font-medium">{tf.label}</td>
+                {LIKELIHOOD_LEVELS.map((level) => (
+                  <td key={level} className="text-center py-1 px-1">
                     <input
                       type="radio"
-                      name={`no-treat-${tf.key}-${level}`}
+                      name={`no-treat-${tf.key}`}
                       className="accent-teal-600 w-4 h-4 cursor-pointer"
                       checked={data[tf.key] === level}
                       onChange={() => handleChange(tf.key, level)}
