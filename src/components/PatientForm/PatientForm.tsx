@@ -3,7 +3,6 @@ import { DemographicsSection } from './DemographicsSection';
 import { DiagnosisSection } from './DiagnosisSection';
 import { TreatmentPlanSection } from './TreatmentPlanSection';
 import { LikelihoodExpectationsSection } from './LikelihoodExpectationsSection';
-import { SurvivalWithoutTreatmentSection } from './SurvivalWithoutTreatmentSection';
 import { PrognosisSection } from './PrognosisSection';
 import { Button } from '@/components/ui/Button';
 import { FileDown, Loader2, AlertCircle, Clipboard, Check } from 'lucide-react';
@@ -73,36 +72,15 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       const doc = <COPEDocument {...{ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, survivalWithoutTreatment, prognosisData }} />;
       const blob = await pdf(doc).toBlob();
 
-      // Open a new tab synchronously (within user gesture)
-      const newTab = window.open('about:blank', '_blank');
-      if (!newTab) {
-        setIsGenerating(false);
-        setError('Please allow popups to view the PDF report.');
-        return;
-      }
-
       const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `COPE-Report-${cancerDetails.typeOfCancer || 'Patient'}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
 
-      // Write PDF viewer into the new tab
-      newTab.document.write(`
-        <!DOCTYPE html>
-        <html>
-          <head>
-            <title>COPE Report</title>
-            <style>
-              * { margin: 0; padding: 0; box-sizing: border-box; }
-              html, body { width: 100%; height: 100%; overflow: hidden; }
-              embed { width: 100%; height: 100%; border: none; }
-            </style>
-          </head>
-          <body>
-            <embed src="${url}" type="application/pdf" />
-          </body>
-        </html>
-      `);
-      newTab.document.close();
-
-      setIsGenerating(false);
       // Clear form after successful generation
       setDemographics(initialDemographics);
       setCancerDetails(initialCancerDetails);
@@ -114,6 +92,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     } catch (err) {
       console.error('Failed to generate PDF:', err);
       setError(err instanceof Error ? err.message : 'Failed to generate PDF. Please try again.');
+    } finally {
       setIsGenerating(false);
     }
   };
@@ -196,8 +175,12 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       <DemographicsSection data={demographics} onChange={setDemographics} />
       <DiagnosisSection data={cancerDetails} onChange={setCancerDetails} />
       <TreatmentPlanSection data={treatmentPlan} onChange={setTreatmentPlan} />
-      <LikelihoodExpectationsSection data={likelihoodExpectations} onChange={setLikelihoodExpectations} />
-      <SurvivalWithoutTreatmentSection data={survivalWithoutTreatment} onChange={setSurvivalWithoutTreatment} />
+      <LikelihoodExpectationsSection
+        likelihoodData={likelihoodExpectations}
+        survivalWithoutTreatmentData={survivalWithoutTreatment}
+        onLikelihoodChange={setLikelihoodExpectations}
+        onSurvivalWithoutTreatmentChange={setSurvivalWithoutTreatment}
+      />
       <PrognosisSection
         data={prognosisData}
         demographics={demographics}

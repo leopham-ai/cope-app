@@ -88,7 +88,7 @@ export function LikelihoodExpectationsPDF({ data }: LikelihoodExpectationsPDFPro
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Likelihood of Survival</Text>
+      <Text style={styles.title}>With Treatment</Text>
       <Text style={styles.intro}>With the most effective cancer treatment, how likely is it that I will live...</Text>
       <Text style={styles.subtext}>(check one in each column)</Text>
 

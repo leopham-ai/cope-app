@@ -88,7 +88,7 @@ export function SurvivalWithoutTreatmentPDF({ data }: SurvivalWithoutTreatmentPD
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Survival Without Treatment</Text>
+      <Text style={styles.title}>Without Treatment</Text>
       <Text style={styles.intro}>Without any cancer treatment, how likely is it that I will live...</Text>
       <Text style={styles.subtext}>(check one in each column)</Text>
 

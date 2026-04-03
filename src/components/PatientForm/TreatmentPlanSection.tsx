@@ -43,7 +43,7 @@ export function TreatmentPlanSection({ data, onChange }: TreatmentPlanSectionPro
         <div>
           <h4 className="text-sm font-medium text-slate-700 mb-3">Planned Cancer Treatments</h4>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-            {TREATMENTS.map((treatment) => (
+            {TREATMENTS.filter(t => t !== 'Other').map((treatment) => (
               <Checkbox
                 key={treatment}
                 label={treatment}
@@ -51,6 +51,11 @@ export function TreatmentPlanSection({ data, onChange }: TreatmentPlanSectionPro
                 onChange={() => toggleTreatment(treatment)}
               />
             ))}
+            <input
+              type="text"
+              placeholder="Other"
+              className="px-3 py-2 border border-slate-300 rounded text-sm shadow-sm"
+            />
           </div>
         </div>
       </div>

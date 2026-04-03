@@ -63,14 +63,9 @@ export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likel
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        {/* Header */}
-        <View style={styles.header}>
-          <Text style={styles.title}>Your Cancer Care Roadmap</Text>
-          <Text style={styles.subtitle}>A Personal Guide to Your Treatment Journey</Text>
-          <View style={styles.demographicsRow}>
-            <Text style={styles.demographicItem}>Sex: {demographics.sex}</Text>
-            <Text style={styles.demographicItem}>Age: {demographics.ageGroup}</Text>
-          </View>
+        {/* Demographics */}
+        <View style={{ marginBottom: 16 }}>
+          <Text style={{ fontSize: 10, color: '#64748b' }}>Sex: {demographics.sex}  •  Age: {demographics.ageGroup}</Text>
         </View>
 
         {/* Diagnosis Section */}
@@ -79,13 +74,14 @@ export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likel
         {/* Treatment Section */}
         <TreatmentSectionPDF data={treatmentPlan} />
 
-        {/* Likelihood Expectations */}
+        {/* My Estimates */}
+        <View style={{ marginBottom: 4, paddingBottom: 6, borderBottomWidth: 1, borderBottomColor: '#e2e8f0' }}>
+          <Text style={{ fontSize: 14, fontWeight: 600, color: '#0d9488' }}>My Estimates</Text>
+        </View>
         <LikelihoodExpectationsPDF data={likelihoodExpectations} />
-
-        {/* Survival Without Treatment */}
         <SurvivalWithoutTreatmentPDF data={survivalWithoutTreatment} />
 
-        {/* Prognosis Section */}
+        {/* Online Estimators */}
         <PrognosisSectionPDF data={prognosisData} />
       </Page>
 

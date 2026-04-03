@@ -64,7 +64,7 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
   };
 
   return (
-    <Card title="Prognosis">
+    <Card title="Online Estimators">
       <div className="space-y-6">
         <div className="bg-slate-50 p-4 rounded-lg">
           <p className="text-sm text-slate-600 italic">

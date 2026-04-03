@@ -94,7 +94,7 @@ export function PrognosisSectionPDF({ data }: PrognosisSectionPDFProps) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Prognosis</Text>
+      <Text style={styles.title}>Online Estimators</Text>
 
       <Text style={styles.explanation}>
         Many cancers that cannot be cured can still be controlled for a period of time. No one can say how much

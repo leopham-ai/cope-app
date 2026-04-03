@@ -1,4 +1,3 @@
-import { Card } from '@/components/ui/Card';
 import { SURVIVAL_TIMEFRAMES, LIKELIHOOD_LEVELS } from '@/constants/clinicalBins';
 import type { SurvivalWithoutTreatment, LikelihoodExpectation, SurvivalTimeframe } from '@/types';
 
@@ -13,8 +12,8 @@ export function SurvivalWithoutTreatmentSection({ data, onChange }: SurvivalWith
   };
 
   return (
-    <Card title="Survival Without Treatment">
-      <div className="mb-3">
+    <div>
+      <div className="mb-3 mt-6">
         <p className="text-sm text-slate-600 italic">
           Without any cancer treatment, how likely is it that I will live...
         </p>
@@ -53,6 +52,6 @@ export function SurvivalWithoutTreatmentSection({ data, onChange }: SurvivalWith
           </tbody>
         </table>
       </div>
-    </Card>
+    </div>
   );
 }

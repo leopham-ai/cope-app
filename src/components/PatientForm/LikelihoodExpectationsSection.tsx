@@ -1,19 +1,27 @@
 import { Card } from '@/components/ui/Card';
 import { SURVIVAL_TIMEFRAMES, LIKELIHOOD_LEVELS } from '@/constants/clinicalBins';
-import type { LikelihoodExpectations, LikelihoodExpectation, SurvivalTimeframe } from '@/types';
+import { SurvivalWithoutTreatmentSection } from './SurvivalWithoutTreatmentSection';
+import type { LikelihoodExpectations, LikelihoodExpectation, SurvivalTimeframe, SurvivalWithoutTreatment } from '@/types';
 
 interface LikelihoodExpectationsSectionProps {
-  data: LikelihoodExpectations;
-  onChange: (data: LikelihoodExpectations) => void;
+  likelihoodData: LikelihoodExpectations;
+  survivalWithoutTreatmentData: SurvivalWithoutTreatment;
+  onLikelihoodChange: (data: LikelihoodExpectations) => void;
+  onSurvivalWithoutTreatmentChange: (data: SurvivalWithoutTreatment) => void;
 }
 
-export function LikelihoodExpectationsSection({ data, onChange }: LikelihoodExpectationsSectionProps) {
+export function LikelihoodExpectationsSection({
+  likelihoodData,
+  survivalWithoutTreatmentData,
+  onLikelihoodChange,
+  onSurvivalWithoutTreatmentChange,
+}: LikelihoodExpectationsSectionProps) {
   const handleChange = (timeframe: SurvivalTimeframe, value: LikelihoodExpectation) => {
-    onChange({ ...data, [timeframe]: value });
+    onLikelihoodChange({ ...likelihoodData, [timeframe]: value });
   };
 
   return (
-    <Card title="Likelihood of Survival">
+    <Card title="My Estimates">
       <div className="mb-3">
         <p className="text-sm text-slate-600 italic">
           With the most effective cancer treatment, how likely is it that I will live...
@@ -43,7 +51,7 @@ export function LikelihoodExpectationsSection({ data, onChange }: LikelihoodExpe
                       type="radio"
                       name={`${tf.key}`}
                       className="accent-teal-600 w-4 h-4 cursor-pointer"
-                      checked={data[tf.key] === level}
+                      checked={likelihoodData[tf.key] === level}
                       onChange={() => handleChange(tf.key, level)}
                     />
                   </td>
@@ -53,6 +61,11 @@ export function LikelihoodExpectationsSection({ data, onChange }: LikelihoodExpe
           </tbody>
         </table>
       </div>
+
+      <SurvivalWithoutTreatmentSection
+        data={survivalWithoutTreatmentData}
+        onChange={onSurvivalWithoutTreatmentChange}
+      />
     </Card>
   );
 }
