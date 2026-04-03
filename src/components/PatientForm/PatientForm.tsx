@@ -3,11 +3,12 @@ import { DemographicsSection } from './DemographicsSection';
 import { DiagnosisSection } from './DiagnosisSection';
 import { TreatmentPlanSection } from './TreatmentPlanSection';
 import { LikelihoodExpectationsSection } from './LikelihoodExpectationsSection';
+import { SurvivalWithoutTreatmentSection } from './SurvivalWithoutTreatmentSection';
 import { PrognosisSection } from './PrognosisSection';
 import { Button } from '@/components/ui/Button';
 import { FileDown, Loader2, AlertCircle, Clipboard, Check } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
-import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations } from '@/types';
+import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations, SurvivalWithoutTreatment } from '@/types';
 import { COPEDocument } from '@/components/PDF/COPEDocument';
 
 const initialDemographics: Demographics = {
@@ -40,6 +41,13 @@ const initialLikelihoodExpectations: LikelihoodExpectations = {
   fiveYear: null,
 };
 
+const initialSurvivalWithoutTreatment: SurvivalWithoutTreatment = {
+  sixMonth: null,
+  oneYear: null,
+  twoYear: null,
+  fiveYear: null,
+};
+
 interface PatientFormProps {
   onComplete: () => void;
 }
@@ -50,6 +58,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
   const [treatmentPlan, setTreatmentPlan] = useState<TreatmentPlan>(initialTreatmentPlan);
   const [prognosisData, setPrognosisData] = useState<PrognosisData>(initialPrognosisData);
   const [likelihoodExpectations, setLikelihoodExpectations] = useState<LikelihoodExpectations>(initialLikelihoodExpectations);
+  const [survivalWithoutTreatment, setSurvivalWithoutTreatment] = useState<SurvivalWithoutTreatment>(initialSurvivalWithoutTreatment);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -61,7 +70,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     setIsGenerating(true);
 
     try {
-      const doc = <COPEDocument {...{ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, prognosisData }} />;
+      const doc = <COPEDocument {...{ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, survivalWithoutTreatment, prognosisData }} />;
       const blob = await pdf(doc).toBlob();
 
       const url = URL.createObjectURL(blob);
@@ -77,6 +86,8 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       setDemographics(initialDemographics);
       setCancerDetails(initialCancerDetails);
       setTreatmentPlan(initialTreatmentPlan);
+      setLikelihoodExpectations(initialLikelihoodExpectations);
+      setSurvivalWithoutTreatment(initialSurvivalWithoutTreatment);
       setPrognosisData(initialPrognosisData);
       onComplete();
     } catch (err) {
@@ -129,6 +140,19 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     });
     lines.push('');
 
+    // Survival Without Treatment
+    lines.push('Survival Without Treatment');
+    lines.push('Without any cancer treatment, how likely is it that I will live...');
+    lines.push('');
+    lines.push('6 Months       1 Year         2 Years        5 Years');
+    likelihoodLevels.forEach((level) => {
+      const cells = ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].map((tf) =>
+        survivalWithoutTreatment[tf as keyof typeof survivalWithoutTreatment] === level ? '[X]' : '[ ]'
+      );
+      lines.push(`${level.padEnd(22)}${cells.join('           ')}`);
+    });
+    lines.push('');
+
     if (prognosisData.additionalContext) {
       lines.push('Additional Context:');
       lines.push(prognosisData.additionalContext);
@@ -151,6 +175,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       <DiagnosisSection data={cancerDetails} onChange={setCancerDetails} />
       <TreatmentPlanSection data={treatmentPlan} onChange={setTreatmentPlan} />
       <LikelihoodExpectationsSection data={likelihoodExpectations} onChange={setLikelihoodExpectations} />
+      <SurvivalWithoutTreatmentSection data={survivalWithoutTreatment} onChange={setSurvivalWithoutTreatment} />
       <PrognosisSection
         data={prognosisData}
         demographics={demographics}

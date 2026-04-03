@@ -2,9 +2,10 @@ import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/rendere
 import { DiagnosisSectionPDF } from './DiagnosisSectionPDF';
 import { TreatmentSectionPDF } from './TreatmentSectionPDF';
 import { LikelihoodExpectationsPDF } from './LikelihoodExpectationsPDF';
+import { SurvivalWithoutTreatmentPDF } from './SurvivalWithoutTreatmentPDF';
 import { PrognosisSectionPDF } from './PrognosisSectionPDF';
 import { PrognosisDiscussion } from './PrognosisDiscussion';
-import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations } from '@/types';
+import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations, SurvivalWithoutTreatment } from '@/types';
 
 // Register fonts - using system fonts
 Font.register({
@@ -54,10 +55,11 @@ interface COPEDocumentProps {
   cancerDetails: CancerDetails;
   treatmentPlan: TreatmentPlan;
   likelihoodExpectations: LikelihoodExpectations;
+  survivalWithoutTreatment: SurvivalWithoutTreatment;
   prognosisData: PrognosisData;
 }
 
-export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, prognosisData }: COPEDocumentProps) {
+export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, survivalWithoutTreatment, prognosisData }: COPEDocumentProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -79,6 +81,9 @@ export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likel
 
         {/* Likelihood Expectations */}
         <LikelihoodExpectationsPDF data={likelihoodExpectations} />
+
+        {/* Survival Without Treatment */}
+        <SurvivalWithoutTreatmentPDF data={survivalWithoutTreatment} />
 
         {/* Prognosis Section */}
         <PrognosisSectionPDF data={prognosisData} />

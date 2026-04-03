@@ -42,6 +42,13 @@ export interface LikelihoodExpectations {
   fiveYear: LikelihoodExpectation;
 }
 
+export interface SurvivalWithoutTreatment {
+  sixMonth: LikelihoodExpectation;
+  oneYear: LikelihoodExpectation;
+  twoYear: LikelihoodExpectation;
+  fiveYear: LikelihoodExpectation;
+}
+
 export interface SurvivalSource {
   source: string;
   likelihoodOfCure: LikelihoodOfCure;
