@@ -3,7 +3,7 @@ import { Card } from '@/components/ui/Card';
 import { Button } from '@/components/ui/Button';
 import { Loader2, Check } from 'lucide-react';
 import { SURVIVAL_SOURCES } from '@/constants/clinicalBins';
-import type { PrognosisData, SurvivalSource, LikelihoodOfCure } from '@/types';
+import type { PrognosisData, SurvivalSource } from '@/types';
 
 interface PrognosisSectionProps {
   data: PrognosisData;
@@ -35,12 +35,6 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
   if (data.survivalSources.length === 0) {
     initializeSourcesIfNeeded();
   }
-
-  const handleLikelihoodChange = (sourceIndex: number, value: LikelihoodOfCure) => {
-    const newSources = [...data.survivalSources];
-    newSources[sourceIndex] = { ...newSources[sourceIndex], likelihoodOfCure: value };
-    onChange({ survivalSources: newSources });
-  };
 
   const handleProviderChange = (field: keyof Omit<SurvivalSource, 'source' | 'likelihoodOfCure'>, value: number) => {
     const providerIndex = data.survivalSources.findIndex(s => s.source === 'Provider Estimate');
@@ -90,23 +84,6 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
               <div className="flex items-center justify-between mb-3">
                 <span className="font-medium text-slate-800">Provider Estimate</span>
                 <span className="text-xs text-slate-500">(Editable)</span>
-              </div>
-
-              <div className="mb-4">
-                <label className="block text-xs text-slate-500 mb-1">Likelihood of Cure with Best Possible Treatment</label>
-                <select
-                  className="w-full px-3 py-2 border border-slate-300 rounded"
-                  value={getSourceData('Provider Estimate')?.likelihoodOfCure || 'Possible (25-75%)'}
-                  onChange={(e) => {
-                    const idx = data.survivalSources.findIndex(s => s.source === 'Provider Estimate');
-                    if (idx >= 0) handleLikelihoodChange(idx, e.target.value as LikelihoodOfCure);
-                  }}
-                >
-                  <option value="Very unlikely (<1%)">Very unlikely (&lt;1%)</option>
-                  <option value="Unlikely (<25%)">Unlikely (&lt;25%)</option>
-                  <option value="Possible (25-75%)">Possible (25-75%)</option>
-                  <option value="Likely (>75%)">Likely (&gt;75%)</option>
-                </select>
               </div>
 
               <div className="grid grid-cols-4 gap-3">
