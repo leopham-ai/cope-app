@@ -30,6 +30,7 @@ const initialTreatmentPlan: TreatmentPlan = {
 
 const initialPrognosisData: PrognosisData = {
   survivalSources: [],
+  additionalContext: '',
 };
 
 const initialLikelihoodExpectations: LikelihoodExpectations = {
@@ -127,6 +128,12 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       lines.push(`${level.padEnd(22)}${cells.join('           ')}`);
     });
     lines.push('');
+
+    if (prognosisData.additionalContext) {
+      lines.push('Additional Context:');
+      lines.push(prognosisData.additionalContext);
+      lines.push('');
+    }
 
     return lines.join('\n');
   };

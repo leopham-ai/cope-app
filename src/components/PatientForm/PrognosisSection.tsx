@@ -27,7 +27,7 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
         twoYear: 0,
         fiveYear: 0,
       }));
-      onChange({ survivalSources: initialSources });
+      onChange({ survivalSources: initialSources, additionalContext: data.additionalContext });
     }
   };
 
@@ -42,7 +42,7 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
 
     const newSources = [...data.survivalSources];
     newSources[providerIndex] = { ...newSources[providerIndex], [field]: value };
-    onChange({ survivalSources: newSources });
+    onChange({ survivalSources: newSources, additionalContext: data.additionalContext });
   };
 
   const handleFetchSource = async (source: string) => {
@@ -226,6 +226,21 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 {getDisplayValues(getSourceData('AI Analysis'))}
               </p>
             </div>
+          </div>
+
+          <div className="pt-4 border-t border-slate-200">
+            <label className="block text-xs font-medium text-slate-700 mb-1">
+              Additional Context for AI Analysis
+            </label>
+            <p className="text-xs text-slate-500 mb-2">
+              Include any additional context to send with data requests (e.g., patient history, comorbidities, relevant lab values).
+            </p>
+            <textarea
+              className="w-full px-3 py-2 border border-slate-300 rounded text-sm text-slate-700 resize-y min-h-[80px]"
+              placeholder="Enter any additional context..."
+              value={data.additionalContext || ''}
+              onChange={(e) => onChange({ ...data, additionalContext: e.target.value })}
+            />
           </div>
         </div>
       </div>

@@ -53,6 +53,7 @@ export interface SurvivalSource {
 
 export interface PrognosisData {
   survivalSources: SurvivalSource[];
+  additionalContext: string;
 }
 
 // Complete form data
