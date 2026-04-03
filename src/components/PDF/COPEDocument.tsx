@@ -1,9 +1,10 @@
 import { Document, Page, Text, View, StyleSheet, Font } from '@react-pdf/renderer';
 import { DiagnosisSectionPDF } from './DiagnosisSectionPDF';
 import { TreatmentSectionPDF } from './TreatmentSectionPDF';
+import { LikelihoodExpectationsPDF } from './LikelihoodExpectationsPDF';
 import { PrognosisSectionPDF } from './PrognosisSectionPDF';
 import { PrognosisDiscussion } from './PrognosisDiscussion';
-import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData } from '@/types';
+import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations } from '@/types';
 
 // Register fonts - using system fonts
 Font.register({
@@ -52,10 +53,11 @@ interface COPEDocumentProps {
   demographics: Demographics;
   cancerDetails: CancerDetails;
   treatmentPlan: TreatmentPlan;
+  likelihoodExpectations: LikelihoodExpectations;
   prognosisData: PrognosisData;
 }
 
-export function COPEDocument({ demographics, cancerDetails, treatmentPlan, prognosisData }: COPEDocumentProps) {
+export function COPEDocument({ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, prognosisData }: COPEDocumentProps) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
@@ -74,6 +76,9 @@ export function COPEDocument({ demographics, cancerDetails, treatmentPlan, progn
 
         {/* Treatment Section */}
         <TreatmentSectionPDF data={treatmentPlan} />
+
+        {/* Likelihood Expectations */}
+        <LikelihoodExpectationsPDF data={likelihoodExpectations} />
 
         {/* Prognosis Section */}
         <PrognosisSectionPDF data={prognosisData} />

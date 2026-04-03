@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { DemographicsSection } from './DemographicsSection';
 import { DiagnosisSection } from './DiagnosisSection';
 import { TreatmentPlanSection } from './TreatmentPlanSection';
+import { LikelihoodExpectationsSection } from './LikelihoodExpectationsSection';
 import { PrognosisSection } from './PrognosisSection';
 import { Button } from '@/components/ui/Button';
 import { FileDown, Loader2, AlertCircle, Clipboard, Check } from 'lucide-react';
 import { pdf } from '@react-pdf/renderer';
-import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData } from '@/types';
+import type { Demographics, CancerDetails, TreatmentPlan, PrognosisData, LikelihoodExpectations } from '@/types';
 import { COPEDocument } from '@/components/PDF/COPEDocument';
 
 const initialDemographics: Demographics = {
@@ -31,6 +32,13 @@ const initialPrognosisData: PrognosisData = {
   survivalSources: [],
 };
 
+const initialLikelihoodExpectations: LikelihoodExpectations = {
+  sixMonth: null,
+  oneYear: null,
+  twoYear: null,
+  fiveYear: null,
+};
+
 interface PatientFormProps {
   onComplete: () => void;
 }
@@ -40,6 +48,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
   const [cancerDetails, setCancerDetails] = useState<CancerDetails>(initialCancerDetails);
   const [treatmentPlan, setTreatmentPlan] = useState<TreatmentPlan>(initialTreatmentPlan);
   const [prognosisData, setPrognosisData] = useState<PrognosisData>(initialPrognosisData);
+  const [likelihoodExpectations, setLikelihoodExpectations] = useState<LikelihoodExpectations>(initialLikelihoodExpectations);
   const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -51,7 +60,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     setIsGenerating(true);
 
     try {
-      const doc = <COPEDocument {...{ demographics, cancerDetails, treatmentPlan, prognosisData }} />;
+      const doc = <COPEDocument {...{ demographics, cancerDetails, treatmentPlan, likelihoodExpectations, prognosisData }} />;
       const blob = await pdf(doc).toBlob();
 
       const url = URL.createObjectURL(blob);
@@ -105,6 +114,20 @@ export function PatientForm({ onComplete }: PatientFormProps) {
     lines.push(treatmentPlan.treatments.length > 0 ? treatmentPlan.treatments.join(', ') : 'No treatments specified');
     lines.push('');
 
+    // Likelihood of Survival
+    lines.push('Likelihood of Survival');
+    lines.push('With the most effective cancer treatment, how likely is it that I will live...');
+    lines.push('');
+    lines.push('6 Months       1 Year         2 Years        5 Years');
+    const likelihoodLevels = ['Very unlikely (<1%)', 'Unlikely (<25%)', 'Possible (25-75%)', 'Likely (>75%)'];
+    likelihoodLevels.forEach((level) => {
+      const cells = ['sixMonth', 'oneYear', 'twoYear', 'fiveYear'].map((tf) =>
+        likelihoodExpectations[tf as keyof typeof likelihoodExpectations] === level ? '[X]' : '[ ]'
+      );
+      lines.push(`${level.padEnd(22)}${cells.join('           ')}`);
+    });
+    lines.push('');
+
     return lines.join('\n');
   };
 
@@ -120,6 +143,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       <DemographicsSection data={demographics} onChange={setDemographics} />
       <DiagnosisSection data={cancerDetails} onChange={setCancerDetails} />
       <TreatmentPlanSection data={treatmentPlan} onChange={setTreatmentPlan} />
+      <LikelihoodExpectationsSection data={likelihoodExpectations} onChange={setLikelihoodExpectations} />
       <PrognosisSection
         data={prognosisData}
         demographics={demographics}

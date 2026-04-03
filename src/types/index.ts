@@ -31,6 +31,17 @@ export type Treatment = 'Radiation' | 'Surgery' | 'Chemotherapy' | 'Immunotherap
 // Prognosis section
 export type LikelihoodOfCure = 'Very unlikely (<1%)' | 'Unlikely (<25%)' | 'Possible (25-75%)' | 'Likely (>75%)';
 
+export type SurvivalTimeframe = 'sixMonth' | 'oneYear' | 'twoYear' | 'fiveYear';
+
+export type LikelihoodExpectation = LikelihoodOfCure | null;
+
+export interface LikelihoodExpectations {
+  sixMonth: LikelihoodExpectation;
+  oneYear: LikelihoodExpectation;
+  twoYear: LikelihoodExpectation;
+  fiveYear: LikelihoodExpectation;
+}
+
 export interface SurvivalSource {
   source: string;
   likelihoodOfCure: LikelihoodOfCure;

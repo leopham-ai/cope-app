@@ -1,4 +1,4 @@
-import type { AgeGroup, CancerStage, TreatmentGoal, Treatment, LikelihoodOfCure } from '@/types';
+import type { AgeGroup, CancerStage, TreatmentGoal, Treatment, LikelihoodOfCure, SurvivalTimeframe } from '@/types';
 
 export const AGE_GROUPS: AgeGroup[] = ['18-34', '35-49', '50-59', '60-69', '70-79', '80-90'];
 
@@ -35,3 +35,17 @@ export const SURVIVAL_SOURCES = [
   'CancerSurvivalRates',
   'AI Analysis',
 ] as const;
+
+export const LIKELIHOOD_LEVELS: LikelihoodOfCure[] = [
+  'Very unlikely (<1%)',
+  'Unlikely (<25%)',
+  'Possible (25-75%)',
+  'Likely (>75%)',
+];
+
+export const SURVIVAL_TIMEFRAMES: { key: SurvivalTimeframe; label: string }[] = [
+  { key: 'sixMonth', label: '6 Months' },
+  { key: 'oneYear', label: '1 Year' },
+  { key: 'twoYear', label: '2 Years' },
+  { key: 'fiveYear', label: '5 Years' },
+];
