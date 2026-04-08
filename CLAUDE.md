@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Digital COPE (Cancer Outcomes & Prognosis Evaluation) is a HIPAA-compliant, 100% stateless web application for generating patient-friendly cancer prognosis documents. Patient data is held only in browser session memory and is cleared on refresh.
+Digital COPE (Cancer Outcomes & Prognosis Evaluation) is a 100% stateless web application for generating patient-friendly cancer prognosis documents. Patient data is held only in browser session memory and is cleared on refresh.
 
 ## Common Commands
 

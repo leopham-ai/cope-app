@@ -1,6 +1,6 @@
 # COPE — Cancer Outcomes & Prognosis Evaluation
 
-A HIPAA-compliant, client-side web application for generating patient-friendly cancer prognosis documents.
+A client-side web application for generating patient-friendly cancer prognosis documents.
 
 **Live:** [cope-app](https://github.com/phamousq/cope-app)
 

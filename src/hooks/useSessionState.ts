@@ -3,7 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 /**
  * Custom hook for session-only state management.
  * State is kept in memory only and cleared on unmount or page refresh.
- * No localStorage or sessionStorage is used to ensure HIPAA compliance.
+ * No localStorage or sessionStorage is used.
  */
 export function useSessionState<T>(initialState: T) {
   const [state, setState] = useState<T>(initialState);
