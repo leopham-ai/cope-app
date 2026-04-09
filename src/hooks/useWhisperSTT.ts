@@ -99,7 +99,18 @@ export function useWhisperSTT(): UseWhisperSTTReturn {
       console.log('Pipeline type after load:', typeof transcriptionPipelineRef.current);
     } catch (err: any) {
       console.error('Failed to load Whisper model:', err);
-      setError(`Failed to load model: ${err.message || 'Unknown error'}`);
+      let errorMessage = 'Failed to load model';
+      
+      // Detect common network issues
+      if (err.message?.includes('Unexpected token') || err.message?.includes('JSON')) {
+        errorMessage = 'Failed to download model files - network may be blocked. Try using a VPN.';
+      } else if (err.message?.includes('fetch') || err.message?.includes('network')) {
+        errorMessage = 'Network error downloading model. Check your internet connection.';
+      } else {
+        errorMessage = `Failed to load model: ${err.message || 'Unknown error'}`;
+      }
+      
+      setError(errorMessage);
       setStatus('error');
     }
   }, []);

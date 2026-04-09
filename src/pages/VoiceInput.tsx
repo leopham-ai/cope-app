@@ -122,7 +122,7 @@ export function VoiceInput() {
           }`}
         >
           <WifiOff className="w-4 h-4" />
-          Whisper AI (Works Offline)
+          Whisper AI (Local)
         </button>
       </div>
 
@@ -145,8 +145,15 @@ export function VoiceInput() {
               onClick={() => setSttProvider('whisper')}
               className="mt-2 text-sm text-purple-600 hover:text-purple-800 underline"
             >
-              Switch to Whisper AI (works offline/in China)
+              Try Whisper AI instead
             </button>
+          )}
+          {sttProvider === 'whisper' && (
+            <p className="mt-2 text-sm text-slate-600">
+              💡 <strong>Tip:</strong> Whisper AI requires downloading model files (~75MB). 
+              If model download fails, it may be due to network restrictions in your region. 
+              Using a VPN or switching to Browser Speech (if available) may help.
+            </p>
           )}
         </div>
       )}
