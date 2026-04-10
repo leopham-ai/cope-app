@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Mic, Square, Copy, Trash2, Upload, Download } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
@@ -20,15 +20,12 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
   
   const displayTranscript = assemblyAI.transcript || manualTranscript;
 
-  const handleTranscriptChange = (newTranscript: string) => {
+  // Notify parent whenever displayTranscript changes (from typing, pasting, or transcription)
+  useEffect(() => {
     if (onTranscriptChange) {
-      onTranscriptChange(newTranscript);
+      onTranscriptChange(displayTranscript);
     }
-  };
-
-  if (assemblyAI.transcript && assemblyAI.transcript !== displayTranscript) {
-    handleTranscriptChange(assemblyAI.transcript);
-  }
+  }, [displayTranscript, onTranscriptChange]);
 
   const currentError = recorder.error || assemblyAI.error;
 
@@ -47,7 +44,6 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
         setIsUploading(true);
         await assemblyAI.transcribe(recorder.audioBlob);
         setIsUploading(false);
-        handleTranscriptChange(assemblyAI.transcript || '');
       }
     }, 500);
   };
@@ -60,7 +56,6 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
     recorder.resetRecording();
     assemblyAI.transcript && (assemblyAI.transcript = null);
     setManualTranscript('');
-    handleTranscriptChange('');
   };
 
   const handleDownloadAudio = () => {
@@ -79,7 +74,10 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
     setIsUploading(true);
     await assemblyAI.transcribe(recorder.audioBlob);
     setIsUploading(false);
-    handleTranscriptChange(assemblyAI.transcript || '');
+  };
+
+  const handleTranscriptInput = (value: string) => {
+    setManualTranscript(value);
   };
 
   if (!recorder.isSupported) {
@@ -105,7 +103,7 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
       <div className="mb-6">
         <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Voice Input</h2>
         <p className="text-slate-600 mt-1 text-sm sm:text-base">
-          Record audio and transcribe using AssemblyAI.
+          Record audio and transcribe using AssemblyAI, or type/paste your transcript.
         </p>
       </div>
 
@@ -217,11 +215,8 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
         </label>
         <textarea
           value={displayTranscript}
-          onChange={(e) => {
-            setManualTranscript(e.target.value);
-            handleTranscriptChange(e.target.value);
-          }}
-          placeholder="Your transcript will appear here after recording..."
+          onChange={(e) => handleTranscriptInput(e.target.value)}
+          placeholder="Your transcript will appear here after recording, or type/paste text here..."
           className="w-full min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 border border-slate-200 rounded-lg resize-y focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
         />
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
@@ -248,8 +243,8 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
 
       {/* Info */}
       <div className="mt-6 text-center text-xs sm:text-sm text-slate-500 px-2">
-        <p>Audio is uploaded to AssemblyAI for transcription.</p>
-        <p className="mt-1">Requires <code>VITE_ASSEMBLYAI_API_KEY</code> in environment.</p>
+        <p>Audio is uploaded to AssemblyAI for transcription, or type/paste directly.</p>
+        <p className="mt-1">Requires <code>VITE_ASSEMBLYAI_API_KEY</code> for voice transcription.</p>
       </div>
     </main>
   );
