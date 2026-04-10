@@ -15,7 +15,7 @@ function App() {
   return (
     <TranscriptContext.Provider value={transcript}>
       <BrowserRouter>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
+        <div className="min-h-screen bg-gradient-to-br from-orange-100 via-amber-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
           <NavBar />
           <Routes>
             <Route path="/" element={<Landing />} />
