@@ -164,28 +164,6 @@ export function Landing() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 sm:py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-gradient-to-r from-orange-500 to-amber-500 dark:from-orange-600 dark:to-amber-600 rounded-3xl p-8 sm:p-12 text-center">
-            <div className="grid sm:grid-cols-3 gap-8">
-              <div>
-                <div className="text-4xl sm:text-5xl font-bold text-white mb-2">50%</div>
-                <div className="text-orange-100">Time Saved on Intake</div>
-              </div>
-              <div>
-                <div className="text-4xl sm:text-5xl font-bold text-white mb-2">99.9%</div>
-                <div className="text-orange-100">Uptime Guaranteed</div>
-              </div>
-              <div>
-                <div className="text-4xl sm:text-5xl font-bold text-white mb-2">HIPAA</div>
-                <div className="text-orange-100">Compliant Platform</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-700 py-8">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-slate-500 dark:text-slate-400 text-sm">
