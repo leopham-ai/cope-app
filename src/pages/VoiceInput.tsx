@@ -1,98 +1,29 @@
 import { useState } from 'react';
-import { Mic, Square, Copy, Trash2, WifiOff, RefreshCw, Cloud } from 'lucide-react';
+import { Mic, Square, Copy, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
-import { useWhisperSTT } from '@/hooks/useWhisperSTT';
-import { useGoogleCloudSTT } from '@/hooks/useGoogleCloudSTT';
-
-type STTProvider = 'webspeech' | 'whisper' | 'googlecloud';
 
 export function VoiceInput() {
-  const [sttProvider, setSttProvider] = useState<STTProvider>('googlecloud');
-  const [transcript, setTranscript] = useState('');
+  const [localTranscript, setLocalTranscript] = useState('');
   const [copied, setCopied] = useState(false);
 
-  // Web Speech API hook (browser native)
+  // Browser-native Web Speech API hook
   const webSpeech = useSpeechRecognition();
-
-  // Whisper STT hook (local, no server needed)
-  const whisper = useWhisperSTT();
-
-  // Google Cloud Speech-to-Text hook (API key required)
-  const googleCloud = useGoogleCloudSTT();
-
-  // Determine which provider is active
-  const getActiveProvider = () => {
-    switch (sttProvider) {
-      case 'webspeech':
-        return webSpeech;
-      case 'whisper':
-        return whisper;
-      case 'googlecloud':
-        return googleCloud;
-    }
-  };
-
-  const activeProvider = getActiveProvider();
   
-  const displayTranscript = sttProvider === 'webspeech' 
-    ? (webSpeech.transcript || transcript)
-    : sttProvider === 'whisper'
-      ? (whisper.transcript || transcript)
-      : (googleCloud.transcript || transcript);
-  
-  const isRecording = sttProvider === 'webspeech' 
-    ? webSpeech.recordingState === 'recording'
-    : sttProvider === 'whisper'
-      ? whisper.status === 'recording'
-      : googleCloud.recordingState === 'recording';
-  
-  const isProcessing = sttProvider === 'webspeech'
-    ? webSpeech.recordingState === 'processing'
-    : sttProvider === 'whisper'
-      ? whisper.status === 'processing' || whisper.status === 'loading'
-      : googleCloud.status === 'loading';
-  
-  const isDisabled = isProcessing || 
-    (sttProvider === 'whisper' && whisper.status === 'loading') ||
-    (sttProvider === 'googlecloud' && googleCloud.status === 'loading');
-  
-  const activeError = sttProvider === 'webspeech' 
-    ? webSpeech.error 
-    : sttProvider === 'whisper'
-      ? whisper.error
-      : googleCloud.error;
+  const displayTranscript = webSpeech.transcript || localTranscript;
+  const isRecording = webSpeech.recordingState === 'recording';
+  const isProcessing = webSpeech.recordingState === 'processing';
+  const isDisabled = isProcessing;
+  const activeError = webSpeech.error;
 
-  // Check if we should show fallback options
-  const showFallback = (sttProvider === 'webspeech' && webSpeech.error) ||
-    (sttProvider === 'googlecloud' && googleCloud.error);
-
-  const handleStartRecording = async () => {
-    switch (sttProvider) {
-      case 'webspeech':
-        webSpeech.startRecording();
-        break;
-      case 'whisper':
-        whisper.startRecording();
-        break;
-      case 'googlecloud':
-        googleCloud.startRecording();
-        break;
-    }
+  const handleStartRecording = () => {
+    console.log('[VoiceInput] Starting recording with browser Web Speech API');
+    webSpeech.startRecording();
   };
 
   const handleStopRecording = () => {
-    switch (sttProvider) {
-      case 'webspeech':
-        webSpeech.stopRecording();
-        break;
-      case 'whisper':
-        whisper.stopRecording();
-        break;
-      case 'googlecloud':
-        googleCloud.stopRecording();
-        break;
-    }
+    console.log('[VoiceInput] Stopping recording');
+    webSpeech.stopRecording();
   };
 
   const handleCopy = async () => {
@@ -103,14 +34,11 @@ export function VoiceInput() {
 
   const handleClear = () => {
     webSpeech.resetTranscript();
-    whisper.resetTranscript();
-    googleCloud.resetTranscript();
-    setTranscript('');
+    setLocalTranscript('');
   };
 
-  // All not supported
-  const anySupported = webSpeech.isSupported || whisper.isSupported || googleCloud.isSupported;
-  if (!anySupported) {
+  // Browser not supported
+  if (!webSpeech.isSupported) {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -121,7 +49,7 @@ export function VoiceInput() {
         </div>
         <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
           <p className="text-red-700">
-            No speech recognition is supported in this browser. Please use Chrome or Edge.
+            Speech recognition is not supported in this browser. Please use Chrome or Edge.
           </p>
         </div>
       </main>
@@ -137,77 +65,14 @@ export function VoiceInput() {
         </p>
       </div>
 
-      {/* Provider selector */}
-      <div className="flex flex-wrap gap-2 mb-6">
-        <button
-          onClick={() => setSttProvider('googlecloud')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-            sttProvider === 'googlecloud'
-              ? 'bg-purple-500 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          <Cloud className="w-4 h-4" />
-          Google Cloud (Recommended)
-        </button>
-        <button
-          onClick={() => setSttProvider('webspeech')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            sttProvider === 'webspeech'
-              ? 'bg-purple-500 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          Browser Speech
-        </button>
-        <button
-          onClick={() => setSttProvider('whisper')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
-            sttProvider === 'whisper'
-              ? 'bg-purple-500 text-white'
-              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-          }`}
-        >
-          <WifiOff className="w-4 h-4" />
-          Whisper AI (Local)
-        </button>
-      </div>
-
-      {/* Loading/Ready indicators */}
-      {sttProvider === 'whisper' && whisper.status === 'loading' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-          <RefreshCw className="w-5 h-5 animate-spin text-blue-500" />
-          <p className="text-blue-700">
-            Loading Whisper AI model (~75MB, downloaded once and cached)...
-          </p>
-        </div>
-      )}
-
-      {sttProvider === 'googlecloud' && googleCloud.status === 'loading' && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-          <RefreshCw className="w-5 h-5 animate-spin text-blue-500" />
-          <p className="text-blue-700">
-            Connecting to Google Cloud Speech API...
-          </p>
-        </div>
-      )}
-
-      {sttProvider === 'googlecloud' && googleCloud.status === 'recording' && (
-        <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
-          <Cloud className="w-5 h-5 text-green-500" />
-          <p className="text-green-700">
-            Connected to Google Cloud - Recording audio...
-          </p>
-        </div>
-      )}
-
       {/* Error display */}
       {activeError && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
           <p className="text-red-700">{activeError}</p>
-          {showFallback && (
+          {activeError.includes('network') && (
             <p className="mt-2 text-sm text-slate-600">
-              💡 Try switching to a different provider above.
+              💡 Browser speech requires internet access to Google's servers. 
+              Try a different network or use a VPN.
             </p>
           )}
         </div>
@@ -239,11 +104,7 @@ export function VoiceInput() {
               ? 'Recording...' 
               : isProcessing 
                 ? 'Processing...' 
-                : sttProvider === 'whisper' && whisper.status === 'loading'
-                  ? 'Loading model...'
-                  : sttProvider === 'googlecloud' && googleCloud.status === 'loading'
-                    ? 'Connecting...'
-                    : 'Click to start recording'}
+                : 'Click to start recording'}
           </p>
           {isRecording && (
             <div className="flex items-center gap-2 mt-2">
@@ -261,16 +122,9 @@ export function VoiceInput() {
         </label>
         <textarea
           value={displayTranscript}
-          onChange={(e) => setTranscript(e.target.value)}
-          placeholder={
-            sttProvider === 'whisper' 
-              ? "Your transcript will appear here after recording..." 
-              : sttProvider === 'googlecloud'
-                ? "Your transcript will appear here in real-time..."
-                : "Your transcript will appear here..."
-          }
+          onChange={(e) => setLocalTranscript(e.target.value)}
+          placeholder="Your transcript will appear here in real-time..."
           className="w-full min-h-[200px] p-4 border border-slate-200 rounded-lg resize-y focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-          readOnly={isRecording}
         />
         <div className="flex gap-3 mt-4">
           <Button
