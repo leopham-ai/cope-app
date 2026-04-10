@@ -28,7 +28,6 @@ export function NavBar() {
             </div>
             <div className="min-w-0">
               <h1 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent truncate">Cope</h1>
-              <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 hidden sm:block">Cancer Outcomes &amp; Prognosis Evaluation</p>
             </div>
           </Link>
 
