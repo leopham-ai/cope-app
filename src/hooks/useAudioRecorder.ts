@@ -23,17 +23,17 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
   const chunksRef = useRef<Blob[]>([]);
   const streamRef = useRef<MediaStream | null>(null);
 
-  const isSupported = typeof window !== 'undefined' && 'MediaRecorder' in window && 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices;
+  const isSupported = typeof window !== 'undefined' && 'MediaRecorder' in window;
 
   const startRecording = useCallback(async () => {
     console.log('[useAudioRecorder] Starting recording...');
     setError(null);
     chunksRef.current = [];
     
-    // Guard: Check if mediaDevices.getUserMedia is available
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      console.error('[useAudioRecorder] getUserMedia not available');
-      setError('Audio recording is not supported in this browser. Please use Chrome or Edge over HTTPS.');
+    // Guard: Check if MediaRecorder is available
+    if (typeof MediaRecorder === 'undefined') {
+      console.error('[useAudioRecorder] MediaRecorder not available');
+      setError('Audio recording is not supported in this browser.');
       setRecordingState('idle');
       return;
     }
@@ -99,12 +99,18 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       
     } catch (err) {
       console.error('[useAudioRecorder] Failed to start recording:', err);
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      
       if (err instanceof Error && err.name === 'NotAllowedError') {
         setError('Microphone access denied. Please allow microphone access in your browser settings.');
       } else if (err instanceof Error && err.name === 'NotFoundError') {
         setError('No microphone found. Please connect a microphone and try again.');
+      } else if (err instanceof Error && err.name === 'NotReadableError') {
+        setError('Microphone is in use by another application.');
+      } else if (errorMessage.includes('getUserMedia') || errorMessage.includes('mediaDevices')) {
+        setError('Microphone access requires HTTPS or localhost. Please access via a secure connection.');
       } else {
-        setError(err instanceof Error ? err.message : 'Failed to access microphone');
+        setError(errorMessage || 'Failed to access microphone');
       }
       setRecordingState('idle');
     }
