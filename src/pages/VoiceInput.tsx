@@ -89,8 +89,8 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
             Hands-free data entry using speech recognition.
           </p>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 sm:p-8 text-center">
-          <p className="text-red-700">
+        <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl p-6 sm:p-8 text-center">
+          <p className="text-red-700 dark:text-red-300">
             Audio recording is not supported in this browser. Please use Chrome or Edge.
           </p>
         </div>
@@ -133,26 +133,26 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
 
       {/* Recording UI */}
       <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 mb-4 sm:mb-6">
-        <div className="flex flex-col items-center">
+        <div className="bg-orange-50/50 dark:bg-slate-800/50 rounded-2xl p-8 sm:p-12">
+          <div className="flex flex-col items-center">
           <button
             onClick={isRecording ? handleStopRecording : handleStartRecording}
             disabled={isProcessing}
             className={`
-              w-24 h-24 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all
+              w-28 h-28 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center transition-all shadow-lg touch-manipulation
               ${isRecording
-                ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                : 'bg-purple-500 hover:bg-purple-600'}
+                ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 animate-pulse' 
+                : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 dark:from-orange-600 dark:to-amber-600'}
               ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
-              text-white shadow-lg touch-manipulation
             `}
           >
             {isRecording ? (
-              <Square className="w-9 h-9 sm:w-8 sm:h-8 fill-current" />
-            ) : (
-              <Mic className="w-9 h-9 sm:w-8 sm:h-8" />
-            )}
+                <Square className="w-10 h-10 sm:w-9 sm:h-9 fill-current text-white" />
+              ) : (
+                <Mic className="w-10 h-10 sm:w-9 sm:h-9 text-white" />
+              )}
           </button>
-          <p className="mt-4 text-slate-600 dark:text-slate-400 font-medium text-sm sm:text-base">
+          <p className="mt-6 text-slate-700 dark:text-slate-300 font-medium text-base sm:text-lg">
             {isRecording
               ? 'Recording...'
               : isProcessing 
@@ -165,6 +165,7 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
               <span className="text-sm text-slate-500 dark:text-slate-400">Speak now</span>
             </div>
           )}
+          </div>
         </div>
       </div>
 
