@@ -57,8 +57,8 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
   return (
     <Card title="Online Estimators">
       <div className="space-y-6">
-        <div className="bg-slate-50 p-4 rounded-lg">
-          <p className="text-sm text-slate-600 italic">
+        <div className="bg-slate-50 dark:bg-slate-700/50 p-4 rounded-lg">
+          <p className="text-sm text-slate-600 dark:text-slate-300 italic">
             Many cancers that cannot be cured can still be controlled for a period of time. No one can say how
             much time a person has left, but doctors can take what they know about you and your cancer and
             estimate how likely it is that a person will live a certain amount of time. These are very rough
@@ -67,13 +67,13 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
         </div>
 
         <div>
-          <h4 className="text-sm font-medium text-slate-700 mb-4">Estimates of Survival</h4>
+          <h4 className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-4">Estimates of Survival</h4>
 
           <div className="space-y-4">
             {/* SEER Data - Button to fetch */}
-            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+            <div className="border border-slate-200 dark:border-slate-600 rounded-lg p-4 bg-slate-50 dark:bg-slate-700/50">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-slate-700">SEER Data</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200">SEER Data</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -96,15 +96,15 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {getDisplayValues(getSourceData('SEER Data'))}
               </p>
             </div>
 
             {/* CancerSurvivalRates - Button to fetch */}
-            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+            <div className="border border-slate-200 dark:border-slate-600 rounded-lg p-4 bg-slate-50 dark:bg-slate-700/50">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-slate-700">CancerSurvivalRates</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200">CancerSurvivalRates</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -127,15 +127,15 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {getDisplayValues(getSourceData('CancerSurvivalRates'))}
               </p>
             </div>
 
             {/* AI Analysis - Button to fetch */}
-            <div className="border border-slate-200 rounded-lg p-4 bg-slate-50">
+            <div className="border border-slate-200 dark:border-slate-600 rounded-lg p-4 bg-slate-50 dark:bg-slate-700/50">
               <div className="flex items-center justify-between mb-3">
-                <span className="font-medium text-slate-700">AI Analysis</span>
+                <span className="font-medium text-slate-700 dark:text-slate-200">AI Analysis</span>
                 <Button
                   variant="outline"
                   size="sm"
@@ -158,21 +158,21 @@ export function PrognosisSection({ data, demographics, cancerDetails, clipboardT
                 </Button>
               </div>
 
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {getDisplayValues(getSourceData('AI Analysis'))}
               </p>
             </div>
           </div>
 
-          <div className="pt-4 border-t border-slate-200">
-            <label className="block text-xs font-medium text-slate-700 mb-1">
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-600">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Additional Context for AI Analysis
             </label>
-            <p className="text-xs text-slate-500 mb-2">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mb-2">
               Include any additional context to send with data requests (e.g., patient history, comorbidities, relevant lab values).
             </p>
             <textarea
-              className="w-full px-3 py-2 border border-slate-300 rounded text-sm text-slate-700 resize-y min-h-[80px]"
+              className="w-full px-3 py-2 border border-slate-300 dark:border-slate-600 rounded text-sm text-slate-700 dark:text-slate-100 resize-y min-h-[80px] bg-white dark:bg-slate-700 placeholder:text-slate-400 dark:placeholder:text-slate-500"
               placeholder="Enter any additional context..."
               value={data.additionalContext || ''}
               onChange={(e) => onChange({ ...data, additionalContext: e.target.value })}
