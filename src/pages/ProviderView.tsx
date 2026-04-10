@@ -549,7 +549,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* TNM Staging Section */}
-        <SectionCard title="TNM Staging (Optional)">
+        <SectionCard title="TNM Staging">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <SelectInput
               label="T - Primary Tumor"
@@ -573,7 +573,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* Molecular & Genomic Markers Section */}
-        <SectionCard title="Molecular & Genomic Markers (Optional)">
+        <SectionCard title="Molecular & Genomic Markers">
           <div>
             <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wide">
               Biomarker & Mutation Results
@@ -589,7 +589,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* Biochemical & Tumor Markers Section */}
-        <SectionCard title="Biochemical & Tumor Markers (Optional)">
+        <SectionCard title="Biochemical & Tumor Markers">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <TextInput
               label="NLR (Neutrophil:Lymphocyte)"
@@ -631,7 +631,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* Treatment Response Section */}
-        <SectionCard title="Treatment Response (Optional)">
+        <SectionCard title="Treatment Response">
           <div>
             <label className="block text-xs font-medium text-slate-600 dark:text-slate-400 mb-1 uppercase tracking-wide">
               Treatment Response Notes
@@ -647,7 +647,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* Patient-Specific Factors Section */}
-        <SectionCard title="Patient-Specific Factors (Optional)">
+        <SectionCard title="Patient-Specific Factors">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <SelectInput
               label="ECOG Performance Status"
@@ -677,7 +677,7 @@ export function ProviderView() {
         </SectionCard>
 
         {/* SEER Registry Data Section */}
-        <SectionCard title="SEER Registry Data (Optional)">
+        <SectionCard title="SEER Registry Data">
           <div className="space-y-4">
             {/* Cancer Classification */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
