@@ -1,43 +1,81 @@
-import { useState } from 'react';
-import { Mic, Square, Copy, Trash2, Upload, Download } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Mic, Square, Copy, Trash2, Upload, Download, Globe } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
 import { useAssemblyAITranscription } from '@/hooks/useAssemblyAIRest';
+import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
+
+type TranscriptionMode = 'assemblyai' | 'browser';
 
 export function VoiceInput() {
+  const [mode, setMode] = useState<TranscriptionMode>('assemblyai');
   const [manualTranscript, setManualTranscript] = useState('');
   const [isUploading, setIsUploading] = useState(false);
+  const [browserTranscript, setBrowserTranscript] = useState('');
   
   const recorder = useAudioRecorder();
-  const transcription = useAssemblyAITranscription();
+  const assemblyAI = useAssemblyAITranscription();
+  const speechRecognition = useSpeechRecognition();
 
   const isRecording = recorder.recordingState === 'recording';
-  const isProcessing = recorder.recordingState === 'processing' || isUploading || transcription.isTranscribing;
+  const isProcessing = recorder.recordingState === 'processing' || isUploading || assemblyAI.isTranscribing || speechRecognition.recordingState === 'processing';
   
-  const displayTranscript = transcription.transcript || manualTranscript;
+  const displayTranscript = mode === 'assemblyai' 
+    ? (assemblyAI.transcript || manualTranscript)
+    : (speechRecognition.transcript || browserTranscript || manualTranscript);
   
-  const currentError = recorder.error || transcription.error;
+  const currentError = recorder.error || assemblyAI.error || (mode === 'browser' ? speechRecognition.error : null);
+
+  // When browser mode, start speech recognition when recording starts
+  useEffect(() => {
+    if (mode === 'browser' && isRecording && speechRecognition.recordingState === 'idle') {
+      console.log('[VoiceInput] Browser mode - starting speech recognition');
+      speechRecognition.startRecording();
+    }
+  }, [isRecording, mode]);
+
+  // When recording stops in browser mode, stop speech recognition too
+  useEffect(() => {
+    if (mode === 'browser' && !isRecording && speechRecognition.recordingState === 'recording') {
+      console.log('[VoiceInput] Browser mode - stopping speech recognition');
+      speechRecognition.stopRecording();
+    }
+  }, [isRecording, mode]);
 
   const handleStartRecording = () => {
-    console.log('[VoiceInput] Starting recording');
+    console.log('[VoiceInput] Starting recording in', mode, 'mode');
+    
+    if (mode === 'browser') {
+      // Browser mode - use Web Speech API directly
+      speechRecognition.startRecording();
+    }
+    
+    // Also start audio recording for download
     recorder.startRecording();
   };
 
   const handleStopRecording = async () => {
     console.log('[VoiceInput] Stopping recording');
+    
+    // Stop audio recording
     recorder.stopRecording();
     
-    // Wait a bit for the blob to be ready
-    setTimeout(async () => {
-      if (recorder.audioBlob) {
-        console.log('[VoiceInput] Audio recorded, blob size:', recorder.audioBlob.size);
-        
-        // Auto-transcribe when recording is done
-        setIsUploading(true);
-        await transcription.transcribe(recorder.audioBlob);
-        setIsUploading(false);
-      }
-    }, 500);
+    if (mode === 'browser') {
+      // Stop speech recognition
+      speechRecognition.stopRecording();
+      // Use the speech recognition transcript
+      setBrowserTranscript(speechRecognition.transcript || '');
+    } else {
+      // AssemblyAI mode - transcribe the recorded audio
+      setTimeout(async () => {
+        if (recorder.audioBlob) {
+          console.log('[VoiceInput] Audio recorded, transcribing with AssemblyAI');
+          setIsUploading(true);
+          await assemblyAI.transcribe(recorder.audioBlob);
+          setIsUploading(false);
+        }
+      }, 500);
+    }
   };
 
   const handleCopy = async () => {
@@ -46,7 +84,9 @@ export function VoiceInput() {
 
   const handleClear = () => {
     recorder.resetRecording();
-    transcription.transcript && (transcription.transcript = null);
+    assemblyAI.transcript && (assemblyAI.transcript = null);
+    speechRecognition.resetTranscript();
+    setBrowserTranscript('');
     setManualTranscript('');
   };
 
@@ -61,7 +101,14 @@ export function VoiceInput() {
     document.body.removeChild(a);
   };
 
-  if (!recorder.isSupported) {
+  const handleReTranscribe = async () => {
+    if (!recorder.audioBlob || mode === 'browser') return;
+    setIsUploading(true);
+    await assemblyAI.transcribe(recorder.audioBlob);
+    setIsUploading(false);
+  };
+
+  if (!recorder.isSupported && !speechRecognition.isSupported) {
     return (
       <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
@@ -72,7 +119,7 @@ export function VoiceInput() {
         </div>
         <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
           <p className="text-red-700">
-            Audio recording is not supported in this browser. Please use Chrome or Edge.
+            Audio recording and speech recognition are not supported in this browser. Please use Chrome or Edge.
           </p>
         </div>
       </main>
@@ -84,15 +131,53 @@ export function VoiceInput() {
       <div className="mb-8">
         <h2 className="text-2xl font-bold text-slate-900">Voice Input</h2>
         <p className="text-slate-600 mt-1">
-          Record audio and transcribe using AssemblyAI.
+          Record audio and transcribe using speech recognition.
         </p>
+      </div>
+
+      {/* Mode selector */}
+      <div className="flex flex-wrap gap-2 mb-6">
+        <button
+          onClick={() => setMode('assemblyai')}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            mode === 'assemblyai'
+              ? 'bg-purple-500 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <Globe className="w-4 h-4" />
+          AssemblyAI
+          <span className="text-xs opacity-75">(Cloud)</span>
+        </button>
+        <button
+          onClick={() => setMode('browser')}
+          disabled={!speechRecognition.isSupported}
+          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
+            mode === 'browser'
+              ? 'bg-purple-500 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          } ${!speechRecognition.isSupported ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          <Globe className="w-4 h-4" />
+          Browser Speech
+          <span className="text-xs opacity-75">(No API)</span>
+        </button>
       </div>
 
       {/* Recording indicator */}
       {isRecording && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 mb-6 flex items-center gap-3">
           <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse" />
-          <p className="text-green-700">Recording audio...</p>
+          <p className="text-green-700">
+            {mode === 'browser' 
+              ? 'Recording with Browser Speech...' 
+              : 'Recording audio for AssemblyAI...'}
+          </p>
+          {mode === 'browser' && speechRecognition.transcript && (
+            <span className="ml-auto text-sm text-slate-500">
+              "{speechRecognition.transcript.substring(0, 50)}..."
+            </span>
+          )}
         </div>
       )}
 
@@ -101,9 +186,11 @@ export function VoiceInput() {
         <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 mb-6 flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin" />
           <p className="text-blue-700">
-            {transcription.isTranscribing 
+            {assemblyAI.isTranscribing 
               ? 'Transcribing with AssemblyAI...' 
-              : 'Processing audio...'}
+              : speechRecognition.recordingState === 'processing'
+                ? 'Processing speech...'
+                : 'Processing audio...'}
           </p>
         </div>
       )}
@@ -112,9 +199,14 @@ export function VoiceInput() {
       {currentError && (
         <div className="bg-red-50 border border-red-200 rounded-xl p-4 mb-6">
           <p className="text-red-700">{currentError}</p>
-          {!currentError.includes('API key') && (
+          {mode === 'browser' && currentError?.includes('network') && (
             <p className="mt-2 text-sm text-slate-600">
-              💡 Make sure your AssemblyAI API key is set in <code>.env</code> as <code>VITE_ASSEMBLYAI_API_KEY</code>
+              💡 Browser speech uses Google's servers. If blocked, try AssemblyAI (cloud).
+            </p>
+          )}
+          {mode === 'assemblyai' && currentError?.includes('API key') && (
+            <p className="mt-2 text-sm text-slate-600">
+              💡 Add <code>VITE_ASSEMBLYAI_API_KEY</code> to your <code>.env</code> file.
             </p>
           )}
         </div>
@@ -164,7 +256,7 @@ export function VoiceInput() {
             <div>
               <p className="text-sm font-medium text-slate-700">Recording ready</p>
               <p className="text-xs text-slate-500">
-                {(recorder.audioBlob.size / 1024).toFixed(1)} KB • {recorder.audioUrl?.includes('webm') ? 'WebM' : 'MP4'}
+                {(recorder.audioBlob.size / 1024).toFixed(1)} KB • WebM
               </p>
             </div>
             <div className="flex gap-2">
@@ -176,9 +268,9 @@ export function VoiceInput() {
                 <Download className="w-4 h-4 mr-2" />
                 Download
               </Button>
-              {!transcription.transcript && !transcription.isTranscribing && (
+              {mode === 'assemblyai' && !assemblyAI.transcript && !assemblyAI.isTranscribing && (
                 <Button
-                  onClick={() => transcription.transcribe(recorder.audioBlob!)}
+                  onClick={handleReTranscribe}
                   variant="outline"
                   size="sm"
                 >
@@ -195,14 +287,21 @@ export function VoiceInput() {
       <div className="bg-white rounded-xl border border-slate-200 p-6">
         <label className="block text-sm font-medium text-slate-700 mb-2">
           Transcript
-          {transcription.isTranscribing && (
+          {assemblyAI.isTranscribing && (
             <span className="ml-2 text-xs text-blue-500">(transcribing...)</span>
+          )}
+          {mode === 'browser' && speechRecognition.recordingState === 'recording' && (
+            <span className="ml-2 text-xs text-green-500">(listening...)</span>
           )}
         </label>
         <textarea
           value={displayTranscript}
           onChange={(e) => setManualTranscript(e.target.value)}
-          placeholder="Your transcript will appear here after recording..."
+          placeholder={
+            mode === 'browser' 
+              ? "Your speech will appear here in real-time..."
+              : "Your transcript will appear here after recording..."
+          }
           className="w-full min-h-[200px] p-4 border border-slate-200 rounded-lg resize-y focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
         />
         <div className="flex gap-3 mt-4">
@@ -226,10 +325,19 @@ export function VoiceInput() {
         </div>
       </div>
 
-      {/* Help text */}
+      {/* Mode info */}
       <div className="mt-6 text-center text-sm text-slate-500">
-        <p>Audio is recorded locally and uploaded to AssemblyAI for transcription.</p>
-        <p className="mt-1">Your API key is stored in your browser's environment variables.</p>
+        {mode === 'assemblyai' ? (
+          <>
+            <p>Audio is uploaded to AssemblyAI for transcription.</p>
+            <p className="mt-1">Requires <code>VITE_ASSEMBLYAI_API_KEY</code> in environment.</p>
+          </>
+        ) : (
+          <>
+            <p>Speech recognition uses your browser's built-in Web Speech API.</p>
+            <p className="mt-1">No API key needed, but may not work in all regions.</p>
+          </>
+        )}
       </div>
     </main>
   );
