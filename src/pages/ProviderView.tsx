@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ChevronDown, ChevronUp, ClipboardList } from 'lucide-react';
+import { ArrowLeft, ChevronDown, ChevronUp, ClipboardList, Brain, Loader2, AlertCircle } from 'lucide-react';
 import type {
   Demographics,
   CancerDetails,
@@ -12,6 +12,7 @@ import type {
   Treatment,
   LikelihoodOfCure,
 } from '../types';
+import { useAIAnalysis } from '@/hooks/useAIAnalysis';
 
 // TNM Staging options
 const T_STAGE_OPTIONS = ['', 'TX', 'T0', 'Tis', 'T1', 'T1a', 'T1b', 'T2', 'T3', 'T4', 'T4a', 'T4b'];
@@ -350,8 +351,14 @@ function SectionCard({ title, children }: SectionCardProps) {
   );
 }
 
+const OPENROUTER_API_KEY = import.meta.env.VITE_OPENROUTER_API_KEY || '';
+
 export function ProviderView() {
   const [formData, setFormData] = useState<ProviderFormData>(initialFormData);
+  const { analysis, isLoading, error, analyze, clearAnalysis } = useAIAnalysis({
+    apiKey: OPENROUTER_API_KEY,
+    model: 'openai/gpt-oss-120b:free',
+  });
 
   const updateDemographics = useCallback(
     <K extends keyof Demographics>(key: K, value: Demographics[K]) => {
@@ -545,6 +552,98 @@ export function ProviderView() {
               rows={3}
               className="w-full px-3 py-2 bg-white dark:bg-slate-700 border border-slate-300 dark:border-slate-600 rounded-lg text-sm text-slate-900 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:ring-2 focus:ring-teal-500 dark:focus:ring-teal-400 focus:border-transparent resize-none"
             />
+          </div>
+
+          {/* AI Analysis Section */}
+          <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Brain className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                <span className="text-sm font-medium text-slate-700 dark:text-slate-300">AI Prognosis Analysis</span>
+                {analysis?.confidence && (
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${
+                    analysis.confidence === 'high' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300' :
+                    analysis.confidence === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-300' :
+                    'bg-slate-100 text-slate-600 dark:bg-slate-700 dark:text-slate-400'
+                  }`}>
+                    {analysis.confidence} confidence
+                  </span>
+                )}
+              </div>
+              {!OPENROUTER_API_KEY ? (
+                <span className="text-xs text-amber-600 dark:text-amber-400">API key not configured</span>
+              ) : (
+                <button
+                  onClick={() => {
+                    if (analysis) {
+                      clearAnalysis();
+                    } else {
+                      analyze({
+                        cancerType: formData.cancerDetails.typeOfCancer,
+                        cancerStage: formData.cancerDetails.cancerStage,
+                        treatmentGoals: formData.treatmentPlan.goals,
+                        treatments: formData.treatmentPlan.treatments,
+                        tnmStage: formData.clinicalMolecular.tStage || formData.clinicalMolecular.nStage || formData.clinicalMolecular.mStage
+                          ? { t: formData.clinicalMolecular.tStage, n: formData.clinicalMolecular.nStage, m: formData.clinicalMolecular.mStage }
+                          : undefined,
+                        molecularMarkers: formData.clinicalMolecular.molecularGenomicMarkers,
+                        biomarkers: {
+                          nlr: formData.clinicalMolecular.nlr,
+                          cea: formData.clinicalMolecular.cea,
+                          ca125: formData.clinicalMolecular.ca125,
+                          psa: formData.clinicalMolecular.psa,
+                          ldh: formData.clinicalMolecular.ldh,
+                        },
+                        patientFactors: {
+                          ecog: formData.patientFactors.ecogStatus,
+                          cci: formData.patientFactors.charlsonComorbidityIndex,
+                          mgps: formData.patientFactors.mgps,
+                        },
+                      });
+                    }
+                  }}
+                  disabled={isLoading}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white text-xs font-medium rounded-lg transition-colors"
+                >
+                  {isLoading ? (
+                    <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Generating...</>
+                  ) : analysis ? (
+                    'Regenerate'
+                  ) : (
+                    <><Brain className="w-3.5 h-3.5" /> Generate Analysis</>
+                  )}
+                </button>
+              )}
+            </div>
+
+            {isLoading && (
+              <div className="flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400">
+                <Loader2 className="w-4 h-4 animate-spin" />
+                <span>Analyzing clinical data with AI...</span>
+              </div>
+            )}
+
+            {error && (
+              <div className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg">
+                <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mt-0.5 flex-shrink-0" />
+                <p className="text-sm text-red-700 dark:text-red-300">{error}</p>
+              </div>
+            )}
+
+            {analysis && !isLoading && (
+              <div className="p-4 bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 rounded-lg">
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <p className="text-sm text-slate-700 dark:text-slate-300 whitespace-pre-wrap">
+                    {analysis.analysis}
+                  </p>
+                </div>
+                {analysis.model && (
+                  <p className="text-xs text-slate-400 dark:text-slate-500 mt-2">
+                    Generated by {analysis.model}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </SectionCard>
 
