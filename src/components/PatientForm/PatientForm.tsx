@@ -191,7 +191,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       />
 
       {error && (
-        <div className="flex items-center gap-2 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+        <div className="flex items-center gap-2 p-4 bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-300">
           <AlertCircle className="w-5 h-5 flex-shrink-0" />
           <p>{error}</p>
         </div>
@@ -236,7 +236,7 @@ export function PatientForm({ onComplete }: PatientFormProps) {
       </div>
 
       {!hasSurvivalData && (
-        <p className="text-sm text-slate-500 text-center">
+        <p className="text-sm text-slate-500 dark:text-slate-400 text-center">
           Note: Add at least one survival estimate in the Prognosis section to enable PDF generation.
         </p>
       )}

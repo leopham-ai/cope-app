@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { NavBar } from '@/components/NavBar/NavBar';
-import { PatientView, ProviderView, VoiceInput, FormData } from '@/pages';
+import { Landing, PatientView, ProviderView, VoiceInput, Backend } from '@/pages';
 import { TranscriptContext, getGlobalTranscript, setGlobalTranscript } from '@/contexts/TranscriptContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 
 function App() {
   const [transcript, setTranscript] = useState<string>(getGlobalTranscript());
@@ -13,19 +14,22 @@ function App() {
   };
 
   return (
-    <TranscriptContext.Provider value={transcript}>
-      <BrowserRouter>
-        <div className="min-h-screen bg-gradient-to-br from-slate-50 to-teal-50">
-          <NavBar />
-          <Routes>
-            <Route path="/" element={<PatientView />} />
-            <Route path="/provider" element={<ProviderView />} />
-            <Route path="/voice" element={<VoiceInput onTranscriptChange={updateTranscript} />} />
-            <Route path="/form-data" element={<FormData />} />
-          </Routes>
-        </div>
-      </BrowserRouter>
-    </TranscriptContext.Provider>
+    <ThemeProvider>
+      <TranscriptContext.Provider value={transcript}>
+        <BrowserRouter>
+          <div className="min-h-screen bg-gradient-to-br from-orange-100 via-amber-50 to-slate-100 dark:from-slate-900 dark:via-slate-900 dark:to-slate-800">
+            <NavBar />
+            <Routes>
+              <Route path="/" element={<Landing />} />
+              <Route path="/patient" element={<PatientView />} />
+              <Route path="/provider" element={<ProviderView />} />
+              <Route path="/voice" element={<VoiceInput onTranscriptChange={updateTranscript} />} />
+              <Route path="/backend" element={<Backend />} />
+            </Routes>
+          </div>
+        </BrowserRouter>
+      </TranscriptContext.Provider>
+    </ThemeProvider>
   );
 }
 

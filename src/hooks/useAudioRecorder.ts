@@ -30,6 +30,14 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
     setError(null);
     chunksRef.current = [];
     
+    // Guard: Check if MediaRecorder is available
+    if (typeof MediaRecorder === 'undefined') {
+      console.error('[useAudioRecorder] MediaRecorder not available');
+      setError('Audio recording is not supported in this browser.');
+      setRecordingState('idle');
+      return;
+    }
+    
     try {
       // Request microphone access
       const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -91,7 +99,19 @@ export function useAudioRecorder(): UseAudioRecorderReturn {
       
     } catch (err) {
       console.error('[useAudioRecorder] Failed to start recording:', err);
-      setError(err instanceof Error ? err.message : 'Failed to access microphone');
+      const errorMessage = err instanceof Error ? err.message : String(err);
+      
+      if (err instanceof Error && err.name === 'NotAllowedError') {
+        setError('Microphone access denied. Please allow microphone access in your browser settings.');
+      } else if (err instanceof Error && err.name === 'NotFoundError') {
+        setError('No microphone found. Please connect a microphone and try again.');
+      } else if (err instanceof Error && err.name === 'NotReadableError') {
+        setError('Microphone is in use by another application.');
+      } else if (errorMessage.includes('getUserMedia') || errorMessage.includes('mediaDevices')) {
+        setError('Microphone access requires HTTPS or localhost. Please access via a secure connection.');
+      } else {
+        setError(errorMessage || 'Failed to access microphone');
+      }
       setRecordingState('idle');
     }
   }, []);

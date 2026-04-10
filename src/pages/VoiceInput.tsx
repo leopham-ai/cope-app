@@ -89,8 +89,8 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
             Hands-free data entry using speech recognition.
           </p>
         </div>
-        <div className="bg-red-50 border border-red-200 rounded-xl p-6 sm:p-8 text-center">
-          <p className="text-red-700">
+        <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl p-6 sm:p-8 text-center">
+          <p className="text-red-700 dark:text-red-300">
             Audio recording is not supported in this browser. Please use Chrome or Edge.
           </p>
         </div>
@@ -101,17 +101,17 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       <div className="mb-6">
-        <h2 className="text-xl sm:text-2xl font-bold text-slate-900">Voice Input</h2>
-        <p className="text-slate-600 mt-1 text-sm sm:text-base">
+        <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-slate-100">Voice Input</h2>
+        <p className="text-slate-600 dark:text-slate-400 mt-1 text-sm sm:text-base">
           Record audio and transcribe using AssemblyAI, or type/paste your transcript.
         </p>
       </div>
 
       {/* Processing indicator */}
       {isProcessing && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 flex items-center gap-3">
+        <div className="bg-blue-50 dark:bg-blue-950/50 border border-blue-200 dark:border-blue-800 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6 flex items-center gap-3">
           <div className="w-5 h-5 border-2 border-blue-500 border-t-transparent rounded-full animate-spin flex-shrink-0" />
-          <p className="text-blue-700 text-sm sm:text-base">
+          <p className="text-blue-700 dark:text-blue-300 text-sm sm:text-base">
             {assemblyAI.isTranscribing 
               ? 'Transcribing with AssemblyAI...' 
               : 'Processing audio...'}
@@ -121,10 +121,10 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
 
       {/* Error display */}
       {currentError && (
-        <div className="bg-red-50 border border-red-200 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
-          <p className="text-red-700 text-sm sm:text-base">{currentError}</p>
+        <div className="bg-red-50 dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-xl p-3 sm:p-4 mb-4 sm:mb-6">
+          <p className="text-red-700 dark:text-red-300 text-sm sm:text-base">{currentError}</p>
           {currentError?.includes('API key') && (
-            <p className="mt-2 text-xs sm:text-sm text-slate-600">
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               💡 Add <code>VITE_ASSEMBLYAI_API_KEY</code> to your <code>.env</code> file.
             </p>
           )}
@@ -132,27 +132,27 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
       )}
 
       {/* Recording UI */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 sm:p-8 mb-4 sm:mb-6">
-        <div className="flex flex-col items-center">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-6 sm:p-8 mb-4 sm:mb-6">
+        <div className="bg-orange-50/50 dark:bg-slate-800/50 rounded-2xl p-8 sm:p-12">
+          <div className="flex flex-col items-center">
           <button
             onClick={isRecording ? handleStopRecording : handleStartRecording}
             disabled={isProcessing}
             className={`
-              w-24 h-24 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-all
+              w-28 h-28 sm:w-24 sm:h-24 rounded-2xl flex items-center justify-center transition-all shadow-lg touch-manipulation
               ${isRecording
-                ? 'bg-red-500 hover:bg-red-600 animate-pulse' 
-                : 'bg-purple-500 hover:bg-purple-600'}
+                ? 'bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 animate-pulse' 
+                : 'bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 dark:from-orange-600 dark:to-amber-600'}
               ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}
-              text-white shadow-lg touch-manipulation
             `}
           >
             {isRecording ? (
-              <Square className="w-9 h-9 sm:w-8 sm:h-8 fill-current" />
-            ) : (
-              <Mic className="w-9 h-9 sm:w-8 sm:h-8" />
-            )}
+                <Square className="w-10 h-10 sm:w-9 sm:h-9 fill-current text-white" />
+              ) : (
+                <Mic className="w-10 h-10 sm:w-9 sm:h-9 text-white" />
+              )}
           </button>
-          <p className="mt-4 text-slate-600 font-medium text-sm sm:text-base">
+          <p className="mt-6 text-slate-700 dark:text-slate-300 font-medium text-base sm:text-lg">
             {isRecording
               ? 'Recording...'
               : isProcessing 
@@ -162,19 +162,20 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
           {isRecording && (
             <div className="flex items-center gap-2 mt-2">
               <span className="w-3 h-3 bg-red-500 rounded-full animate-pulse" />
-              <span className="text-sm text-slate-500">Speak now</span>
+              <span className="text-sm text-slate-500 dark:text-slate-400">Speak now</span>
             </div>
           )}
+          </div>
         </div>
       </div>
 
       {/* Audio file info */}
       {recorder.audioBlob && !isRecording && (
-        <div className="bg-slate-50 rounded-xl border border-slate-200 p-3 sm:p-4 mb-4 sm:mb-6">
+        <div className="bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 p-3 sm:p-4 mb-4 sm:mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
-              <p className="text-sm font-medium text-slate-700">Recording ready</p>
-              <p className="text-xs text-slate-500">
+              <p className="text-sm font-medium text-slate-700 dark:text-slate-300">Recording ready</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 {(recorder.audioBlob.size / 1024).toFixed(1)} KB • WebM
               </p>
             </div>
@@ -206,8 +207,8 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
       )}
 
       {/* Transcript display */}
-      <div className="bg-white rounded-xl border border-slate-200 p-4 sm:p-6">
-        <label className="block text-sm font-medium text-slate-700 mb-2">
+      <div className="bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 p-4 sm:p-6">
+        <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
           Transcript
           {assemblyAI.isTranscribing && (
             <span className="ml-2 text-xs text-blue-500">(transcribing...)</span>
@@ -217,7 +218,7 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
           value={displayTranscript}
           onChange={(e) => handleTranscriptInput(e.target.value)}
           placeholder="Your transcript will appear here after recording, or type/paste text here..."
-          className="w-full min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 border border-slate-200 rounded-lg resize-y focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-sm sm:text-base"
+          className="w-full min-h-[150px] sm:min-h-[200px] p-3 sm:p-4 border border-slate-200 dark:border-slate-700 rounded-lg resize-y focus:ring-2 focus:ring-purple-500 dark:focus:ring-purple-400 focus:border-purple-500 dark:focus:border-purple-400 text-sm sm:text-base bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500"
         />
         <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4">
           <Button
@@ -232,7 +233,7 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
           {displayTranscript && (
             <button
               onClick={handleClear}
-              className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-slate-600 hover:text-slate-800 hover:bg-slate-100 rounded-lg transition-colors"
+              className="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-slate-600 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Clear
@@ -242,7 +243,7 @@ export function VoiceInput({ onTranscriptChange }: VoiceInputProps) {
       </div>
 
       {/* Info */}
-      <div className="mt-6 text-center text-xs sm:text-sm text-slate-500 px-2">
+      <div className="mt-6 text-center text-xs sm:text-sm text-slate-500 dark:text-slate-400 px-2">
         <p>Audio is uploaded to AssemblyAI for transcription, or type/paste directly.</p>
         <p className="mt-1">Requires <code>VITE_ASSEMBLYAI_API_KEY</code> for voice transcription.</p>
       </div>
